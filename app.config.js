@@ -1,0 +1,36 @@
+module.exports = {
+  name: '冒险者公会',
+  slug: 'adventurer-guild-todo',
+  version: '1.0.0',
+  orientation: 'portrait',
+  icon: './src/assets/images/icon.png',
+  userInterfaceStyle: 'light',
+  splash: {
+    image: './src/assets/images/splash.png',
+    resizeMode: 'contain',
+    backgroundColor: '#5a3e2b',
+  },
+  assetBundlePatterns: ['**/*'],
+  ios: {
+    supportsTablet: true,
+    bundleIdentifier: 'com.adventurer.guild.todo',
+  },
+  android: {
+    adaptiveIcon: {
+      foregroundImage: './src/assets/images/adaptive-icon.png',
+      backgroundColor: '#5a3e2b',
+    },
+    package: 'com.adventurer.guild.todo',
+    permissions: [
+      'RECEIVE_BOOT_COMPLETED',
+      'VIBRATE',
+      'POST_NOTIFICATIONS',
+    ],
+  },
+  plugins: [
+    'expo-notifications',
+    'expo-sqlite',
+    'expo-background-fetch',
+    'expo-task-manager',
+  ],
+};

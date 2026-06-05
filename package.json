@@ -1,0 +1,45 @@
+{
+  "name": "adventurer-guild-todo",
+  "version": "1.0.0",
+  "description": "冒险者公会·每日悬赏任务栏 - 移动端离线待办工具",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "build:android": "expo build:android",
+    "build:ios": "expo build:ios"
+  },
+  "dependencies": {
+    "expo": "~50.0.0",
+    "expo-sqlite": "~13.0.0",
+    "expo-notifications": "~0.27.0",
+    "expo-background-fetch": "~11.0.0",
+    "expo-task-manager": "~11.0.0",
+    "expo-file-system": "~16.0.0",
+    "expo-sharing": "~11.0.0",
+    "expo-document-picker": "~12.0.0",
+    "expo-font": "~11.0.0",
+    "expo-av": "~13.0.0",
+    "react": "18.2.0",
+    "react-native": "0.73.0",
+    "react-native-paper": "^5.0.0",
+    "react-native-safe-area-context": "4.8.2",
+    "react-native-screens": "~3.29.0",
+    "react-native-gesture-handler": "~2.14.0",
+    "react-native-reanimated": "~3.6.0",
+    "@react-navigation/native": "^6.1.0",
+    "@react-navigation/native-stack": "^6.9.0",
+    "@react-native-community/datetimepicker": "^7.0.0",
+    "zustand": "^4.4.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "~18.2.0",
+    "@types/react-native": "~0.73.0",
+    "@types/uuid": "^9.0.0",
+    "typescript": "^5.3.0"
+  },
+  "private": true
+}
