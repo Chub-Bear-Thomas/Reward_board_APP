@@ -285,26 +285,6 @@ class NotificationService {
     }
   }
 
-  // 处理通知点击
-  async handleNotificationResponse(response: Notifications.NotificationResponse): Promise<void> {
-    const data = response.notification.request.content.data;
-
-    if (data?.questId) {
-      // 导航到任务详情页
-      // 这里需要与导航服务集成
-      console.log('导航到任务详情:', data.questId);
-    }
-  }
-
-  // 获取所有已调度的通知
-  async getScheduledNotifications(): Promise<Notifications.NotificationRequest[]> {
-    try {
-      return await Notifications.getAllScheduledNotificationsAsync();
-    } catch (error) {
-      console.error('获取已调度通知失败:', error);
-      return [];
-    }
-  }
 }
 
 // 导出单例实例

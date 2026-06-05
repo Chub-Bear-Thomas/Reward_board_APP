@@ -1,4 +1,4 @@
-import { Quest, LEVEL_MAP } from '../types';
+import { LEVEL_MAP } from '../types';
 
 // 格式化日期时间
 export const formatDateTime = (dateString: string): string => {
@@ -60,18 +60,7 @@ export const isExpired = (deadlineString: string): boolean => {
   return deadline < now;
 };
 
-// 检查是否是今天
-export const isToday = (dateString: string): boolean => {
-  const date = new Date(dateString);
-  const now = new Date();
-  return (
-    date.getFullYear() === now.getFullYear() &&
-    date.getMonth() === now.getMonth() &&
-    date.getDate() === now.getDate()
-  );
-};
-
-// 计算等级信息
+// 计算等级信息（单一数据源）
 export const calculateLevel = (experience: number) => {
   let currentLevel = LEVEL_MAP[0];
 
@@ -92,55 +81,6 @@ export const calculateLevel = (experience: number) => {
     currentExp: experience,
     nextLevelExp,
     progress: Math.min(progress, 1),
-  };
-};
-
-// 计算经验值进度百分比
-export const calculateExpProgress = (currentExp: number, level: number): number => {
-  const currentLevelInfo = LEVEL_MAP.find(l => l.level === level);
-  const nextLevelInfo = LEVEL_MAP.find(l => l.level === level + 1);
-
-  if (!currentLevelInfo || !nextLevelInfo) return 100;
-
-  const expInLevel = currentExp - currentLevelInfo.requiredExp;
-  const expNeeded = nextLevelInfo.requiredExp - currentLevelInfo.requiredExp;
-
-  return Math.min(Math.round((expInLevel / expNeeded) * 100), 100);
-};
-
-// 生成UUID
-export const generateUUID = (): string => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-};
-
-// 防抖函数
-export const debounce = <T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): ((...args: Parameters<T>) => void) => {
-  let timeout: NodeJS.Timeout;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-};
-
-// 节流函数
-export const throttle = <T extends (...args: any[]) => any>(
-  func: T,
-  limit: number
-): ((...args: Parameters<T>) => void) => {
-  let inThrottle: boolean;
-  return (...args: Parameters<T>) => {
-    if (!inThrottle) {
-      func(...args);
-      inThrottle = true;
-      setTimeout(() => (inThrottle = false), limit);
-    }
   };
 };
 
@@ -193,27 +133,6 @@ export const truncateText = (text: string, maxLength: number): string => {
   return text.slice(0, maxLength) + '...';
 };
 
-// 获取任务状态图标
-export const getStatusIcon = (status: string): string => {
-  switch (status) {
-    case 'todo':
-      return '✏️';
-    case 'in_progress':
-      return '⏳';
-    case 'done':
-      return '✅';
-    case 'failed':
-      return '❌';
-    default:
-      return '❓';
-  }
-};
-
-// 获取奖励图标
-export const getRewardIcon = (emoji: string): string => {
-  return emoji || '🎁';
-};
-
 // 计算任务紧急程度
 export const getTaskUrgency = (deadline: string): 'high' | 'medium' | 'low' => {
   const deadlineDate = new Date(deadline);
@@ -224,35 +143,4 @@ export const getTaskUrgency = (deadline: string): 'high' | 'medium' | 'low' => {
   if (diffHours <= 2) return 'high';
   if (diffHours <= 24) return 'medium';
   return 'low';
-};
-
-// 获取紧急程度颜色
-export const getUrgencyColor = (urgency: 'high' | 'medium' | 'low'): string => {
-  switch (urgency) {
-    case 'high':
-      return '#b71c1c';
-    case 'medium':
-      return '#f57c00';
-    case 'low':
-      return '#2e7d32';
-  }
-};
-
-// 检查是否可以接受任务
-export const canAcceptQuest = (
-  inProgressCount: number,
-  maxConcurrent: number
-): boolean => {
-  return inProgressCount < maxConcurrent;
-};
-
-// 获取并行任务提示
-export const getConcurrentQuestsHint = (
-  inProgressCount: number,
-  maxConcurrent: number
-): string | null => {
-  if (inProgressCount >= maxConcurrent) {
-    return `并行委托已达上限 (当前上限${maxConcurrent})，请先完成或放弃部分任务`;
-  }
-  return null;
 };

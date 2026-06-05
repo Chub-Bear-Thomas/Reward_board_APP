@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Adventurer, Quest, QuestStatus, FilterTag, QuestFormData, LEVEL_MAP, DEFAULT_ADVENTURER } from '../types';
 import { databaseService } from '../services/database';
 import { notificationService } from '../services/notification';
+import { calculateLevel } from '../utils/helpers';
 
 interface StoreState {
   // 状态
@@ -30,8 +31,7 @@ interface StoreState {
   clearError: () => void;
 
   // 计算属性
-  getFilteredQuests: () => Quest[];
-  getCurrentLevel: () => { level: number; title: string; currentExp: number; nextLevelExp: number };
+  getCurrentLevel: () => { level: number; title: string; currentExp: number; nextLevelExp: number; progress: number };
   getMaxConcurrentQuests: () => number;
   getInProgressQuestCount: () => number;
 }
@@ -105,14 +105,12 @@ export const useStore = create<StoreState>((set, get) => ({
   updateAdventurer: async (updates: Partial<Adventurer>) => {
     try {
       await databaseService.updateUser(updates);
-      const adventurer = await databaseService.getUser();
-      if (adventurer) {
-        set({ adventurer });
+      const adventurer = { ...get().adventurer!, ...updates };
+      set({ adventurer });
 
-        // 如果更新了通知设置，重新调度晨间提醒
-        if (updates.notificationEnabled !== undefined || updates.morningReminderTime !== undefined) {
-          await notificationService.scheduleMorningReminder(adventurer);
-        }
+      // 如果更新了通知设置，重新调度晨间提醒
+      if (updates.notificationEnabled !== undefined || updates.morningReminderTime !== undefined) {
+        await notificationService.scheduleMorningReminder(adventurer);
       }
     } catch (error) {
       set({ error: '更新冒险者信息失败' });
@@ -180,10 +178,10 @@ export const useStore = create<StoreState>((set, get) => ({
         acceptedAt: now,
       });
 
-      // 调度截止预警
-      const quest = await databaseService.getQuestById(id);
+      // 调度截止预警（从内存中获取，避免额外DB读取）
+      const quest = get().quests.find(q => q.id === id);
       if (quest) {
-        await notificationService.scheduleDeadlineWarnings(quest);
+        await notificationService.scheduleDeadlineWarnings({ ...quest, status: 'in_progress', acceptedAt: now });
       }
 
       await get().loadQuests();
@@ -204,20 +202,14 @@ export const useStore = create<StoreState>((set, get) => ({
       if (!quest) throw new Error('任务不存在');
 
       const now = new Date().toISOString();
-      await databaseService.updateQuest(id, {
-        status: 'done',
-        completedAt: now,
-      });
 
-      // 增加经验值
-      const newExp = adventurer.experience + quest.exp;
-      await databaseService.updateUser({ experience: newExp });
-
-      // 取消截止预警
-      await notificationService.cancelDeadlineWarnings(id);
-
-      // 发送完成通知
-      await notificationService.sendQuestCompletedNotification(quest);
+      // 并行执行独立的DB写入和通知操作
+      await Promise.all([
+        databaseService.updateQuest(id, { status: 'done', completedAt: now }),
+        databaseService.updateUser({ experience: adventurer.experience + quest.exp }),
+        notificationService.cancelDeadlineWarnings(id),
+        notificationService.sendQuestCompletedNotification(quest),
+      ]);
 
       // 检查是否升级
       const oldLevel = get().getCurrentLevel().level;
@@ -271,11 +263,21 @@ export const useStore = create<StoreState>((set, get) => ({
     }
   },
 
-  // 设置筛选条件
+  // 设置筛选条件（合并为单次set避免双渲染）
   setFilter: async (filter: FilterTag) => {
     try {
-      set({ currentFilter: filter });
-      await get().loadQuests(filter);
+      const currentFilter = filter;
+      let quests: Quest[];
+
+      if (currentFilter === 'today') {
+        quests = await databaseService.getTodayQuests();
+      } else if (currentFilter === 'all') {
+        quests = await databaseService.getQuests('all');
+      } else {
+        quests = await databaseService.getQuests(currentFilter);
+      }
+
+      set({ quests, currentFilter });
     } catch (error) {
       console.error('设置筛选条件失败:', error);
     }
@@ -320,51 +322,13 @@ export const useStore = create<StoreState>((set, get) => ({
     set({ error: null });
   },
 
-  // 计算属性：获取筛选后的任务
-  getFilteredQuests: () => {
-    const { quests, currentFilter } = get();
-
-    if (currentFilter === 'today') {
-      const today = new Date();
-      const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
-
-      return quests.filter(quest => {
-        const deadline = new Date(quest.deadline);
-        return deadline >= startOfDay && deadline <= endOfDay &&
-               (quest.status === 'todo' || quest.status === 'in_progress');
-      });
-    }
-
-    return quests;
-  },
-
   // 计算属性：获取当前等级信息
   getCurrentLevel: () => {
     const { adventurer } = get();
     if (!adventurer) {
-      return { level: 1, title: '见习冒险者', currentExp: 0, nextLevelExp: 150 };
+      return { level: 1, title: '见习冒险者', currentExp: 0, nextLevelExp: 150, progress: 0 };
     }
-
-    const currentExp = adventurer.experience;
-    let currentLevel = LEVEL_MAP[0];
-
-    for (let i = LEVEL_MAP.length - 1; i >= 0; i--) {
-      if (currentExp >= LEVEL_MAP[i].requiredExp) {
-        currentLevel = LEVEL_MAP[i];
-        break;
-      }
-    }
-
-    const nextLevel = LEVEL_MAP.find(l => l.level === currentLevel.level + 1);
-    const nextLevelExp = nextLevel ? nextLevel.requiredExp : currentLevel.requiredExp;
-
-    return {
-      level: currentLevel.level,
-      title: currentLevel.title,
-      currentExp,
-      nextLevelExp,
-    };
+    return calculateLevel(adventurer.experience);
   },
 
   // 计算属性：获取最大并行任务数

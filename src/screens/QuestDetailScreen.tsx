@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   View,
   StyleSheet,
@@ -21,8 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStore } from '../stores/useStore';
 import { QuestDetailScreenProps } from '../types/navigation';
 import { colors, spacing, shadows, getStatusColor, getStatusText, getLevelColor } from '../utils/theme';
-import { formatDateTime, formatTimeRemaining, isExpired, calculateLevel } from '../utils/helpers';
-import { Quest } from '../types';
+import { formatDateTime, formatTimeRemaining, isExpired } from '../utils/helpers';
 
 const QuestDetailScreen: React.FC<QuestDetailScreenProps> = ({ navigation, route }) => {
   const insets = useSafeAreaInsets();
@@ -30,7 +29,6 @@ const QuestDetailScreen: React.FC<QuestDetailScreenProps> = ({ navigation, route
   const {
     quests,
     adventurer,
-    loadQuests,
     acceptQuest,
     completeQuest,
     abandonQuest,
@@ -40,18 +38,8 @@ const QuestDetailScreen: React.FC<QuestDetailScreenProps> = ({ navigation, route
     getMaxConcurrentQuests,
   } = useStore();
 
-  const [quest, setQuest] = useState<Quest | null>(null);
-
-  useEffect(() => {
-    loadQuests();
-  }, []);
-
-  useEffect(() => {
-    const foundQuest = quests.find(q => q.id === questId);
-    if (foundQuest) {
-      setQuest(foundQuest);
-    }
-  }, [quests, questId]);
+  // 直接从store派生，避免冗余状态和DB查询
+  const quest = quests.find(q => q.id === questId) || null;
 
   if (!quest) {
     return (

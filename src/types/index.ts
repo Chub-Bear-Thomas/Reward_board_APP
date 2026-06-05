@@ -50,20 +50,6 @@ export interface LevelInfo {
 // 筛选标签类型
 export type FilterTag = 'today' | 'all' | 'done' | 'failed';
 
-// 应用状态类型
-export interface AppState {
-  // 冒险者信息
-  adventurer: Adventurer | null;
-  // 任务列表
-  quests: Quest[];
-  // 当前筛选
-  currentFilter: FilterTag;
-  // 加载状态
-  isLoading: boolean;
-  // 错误信息
-  error: string | null;
-}
-
 // 表单数据类型
 export interface QuestFormData {
   title: string;

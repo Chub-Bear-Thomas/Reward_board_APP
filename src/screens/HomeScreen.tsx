@@ -23,7 +23,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStore } from '../stores/useStore';
 import { HomeScreenProps } from '../types/navigation';
 import { colors, spacing, shadows, getStatusColor, getStatusText, getLevelColor } from '../utils/theme';
-import { formatDateTime, formatTimeRemaining, isExpired, calculateLevel } from '../utils/helpers';
+import { formatDateTime, formatTimeRemaining, isExpired } from '../utils/helpers';
 import { Quest, FilterTag } from '../types';
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {

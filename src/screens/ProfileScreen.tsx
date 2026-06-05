@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -22,7 +22,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStore } from '../stores/useStore';
 import { ProfileScreenProps } from '../types/navigation';
 import { colors, spacing, shadows, getLevelColor } from '../utils/theme';
-import { calculateLevel, formatExp, formatNumber } from '../utils/helpers';
+import { formatExp } from '../utils/helpers';
 import { AVATAR_IDS } from '../types';
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
@@ -34,16 +34,11 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
     getCurrentLevel,
     getInProgressQuestCount,
     getMaxConcurrentQuests,
-    loadAdventurer,
   } = useStore();
 
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [newNickname, setNewNickname] = useState('');
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
-
-  useEffect(() => {
-    loadAdventurer();
-  }, []);
 
   const levelInfo = getCurrentLevel();
   const inProgressCount = getInProgressQuestCount();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -35,16 +35,11 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
     updateAdventurer,
     exportData,
     importData,
-    loadAdventurer,
   } = useStore();
 
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
-
-  useEffect(() => {
-    loadAdventurer();
-  }, []);
 
   const handleNotificationToggle = async () => {
     if (!adventurer) return;
