@@ -26,5 +26,8 @@ npm-debug.log*
 .env.local
 .env.*.local
 
+# Tauri build
+src-tauri/target/
+
 # Claude Code
 .claude/
