@@ -1,0 +1,269 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --parchment-bg: #f5ead4;
+  --wood-bg: #5e4427;
+  --gold: #c9a84c;
+  --crimson: #8b2252;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Serif SC', 'Noto Serif JP', Georgia, serif;
+  background-color: #2a1f14;
+  color: #f5ead4;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* 木板背景纹理（CSS 渐变模拟） */
+.wood-bg {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 40px,
+      rgba(0,0,0,0.05) 40px,
+      rgba(0,0,0,0.05) 41px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 200px,
+      rgba(0,0,0,0.08) 200px,
+      rgba(0,0,0,0.08) 202px
+    ),
+    linear-gradient(
+      180deg,
+      #5e4427 0%,
+      #6b4e30 20%,
+      #5a4025 40%,
+      #6e5233 60%,
+      #574020 80%,
+      #5e4427 100%
+    );
+}
+
+/* 羊皮纸背景 */
+.parchment-bg {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(139,109,56,0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(139,109,56,0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 80%, rgba(100,70,30,0.06) 0%, transparent 60%),
+    linear-gradient(
+      180deg,
+      #f5ead4 0%,
+      #eddcb8 30%,
+      #f0e2c6 60%,
+      #e8d4bd 100%
+    );
+  color: #3a2b14;
+}
+
+/* 悬赏令卡片 */
+.quest-card {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(201,168,76,0.08) 0%, transparent 50%),
+    linear-gradient(180deg, #f8f0e0 0%, #f0e2c6 50%, #e8d8b8 100%);
+  border: 2px solid #c9a84c;
+  border-radius: 4px;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.3),
+    inset 0 0 20px rgba(139,109,56,0.1);
+  transition: all 0.3s ease;
+}
+
+.quest-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 6px 20px rgba(0,0,0,0.4),
+    inset 0 0 20px rgba(201,168,76,0.15);
+}
+
+/* 金属按钮 */
+.metal-btn {
+  background: linear-gradient(180deg, #d4a84c 0%, #a8894e 50%, #8b6d38 100%);
+  border: 2px solid #c9a84c;
+  border-radius: 50%;
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.4),
+    inset 0 1px 2px rgba(255,255,255,0.3);
+  color: #2a1f14;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.metal-btn:hover {
+  background: linear-gradient(180deg, #e0b85c 0%, #b89958 50%, #9c7d42 100%);
+  box-shadow:
+    0 4px 12px rgba(201,168,76,0.4),
+    inset 0 1px 2px rgba(255,255,255,0.4);
+}
+
+.metal-btn:active {
+  transform: scale(0.95);
+}
+
+/* 状态戳记 */
+.stamp {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stamp-pending {
+  background: rgba(201,168,76,0.2);
+  color: #c9a84c;
+  border: 1px solid #c9a84c;
+}
+
+.stamp-in-progress {
+  background: rgba(45,107,63,0.2);
+  color: #2d6b3f;
+  border: 1px solid #2d6b3f;
+}
+
+.stamp-completed {
+  background: rgba(45,107,63,0.3);
+  color: #1a5c2e;
+  border: 2px solid #2d6b3f;
+}
+
+.stamp-failed {
+  background: rgba(139,34,82,0.2);
+  color: #8b2252;
+  border: 2px solid #8b2252;
+}
+
+/* 经验条 */
+.exp-bar {
+  height: 8px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(201,168,76,0.3);
+}
+
+.exp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c9a84c, #e0c068, #c9a84c);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* 难度星级 */
+.difficulty-star {
+  color: #c9a84c;
+  text-shadow: 0 0 4px rgba(201,168,76,0.5);
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(201,168,76,0.4);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(201,168,76,0.6);
+}
+
+/* 模态框遮罩 */
+.modal-overlay {
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(2px);
+}
+
+/* 倒计时紧急 */
+.countdown-urgent {
+  color: #8b2252;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* 升级动画 */
+@keyframes levelup-bg {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes levelup-beam {
+  0% { opacity: 0; transform: translateX(-50%) scaleY(0); }
+  30% { opacity: 1; transform: translateX(-50%) scaleY(1); }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes levelup-ring {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+@keyframes levelup-particle {
+  0% { transform: rotate(var(--rotation)) translateY(0); opacity: 1; }
+  100% { transform: rotate(var(--rotation)) translateY(-200px); opacity: 0; }
+}
+
+@keyframes levelup-content {
+  0% { transform: scale(0.3); opacity: 0; }
+  30% { transform: scale(1.2); opacity: 1; }
+  50% { transform: scale(1); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+
+@keyframes levelup-icon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-levelup-bg {
+  animation: levelup-bg 3s ease-in-out forwards;
+}
+
+.animate-levelup-beam {
+  animation: levelup-beam 3s ease-in-out forwards;
+}
+
+.animate-levelup-ring {
+  animation: levelup-ring 1.5s ease-out forwards;
+}
+
+.animate-levelup-particle {
+  animation: levelup-particle 2s ease-out forwards;
+}
+
+.animate-levelup-content {
+  animation: levelup-content 3s ease-in-out forwards;
+}
+
+.animate-levelup-icon {
+  animation: levelup-icon 0.5s ease-in-out infinite;
+}
